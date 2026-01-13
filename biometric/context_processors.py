@@ -9,9 +9,13 @@ Functions:
 """
 
 from base.models import BiometricAttendance
+from django.db import connection
+from django_tenants.utils import get_public_schema_name
 
 
 def biometric_is_installed(_request):
+    if connection.schema_name == get_public_schema_name():
+        return {"is_installed": False}
     """
     Check if the biometric system is installed.
 

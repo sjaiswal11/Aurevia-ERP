@@ -923,6 +923,11 @@ def home(request):
     """
     This method is used to render index page
     """
+    from django.db import connection
+    from django_tenants.utils import get_public_schema_name
+
+    if connection.schema_name == get_public_schema_name():
+        return render(request, "landing_home.html")
 
     today = datetime.today()
     today_weekday = today.weekday()

@@ -8,42 +8,52 @@ from dateutil.relativedelta import relativedelta
 
 
 def leave_reset():
+    from django_tenants.utils import schema_context
+    from customers.models import Client
     from leave.models import LeaveType
 
-    today = datetime.now()
-    today_date = today.date()
-    leave_types = LeaveType.objects.filter(reset=True)
-    # Looping through filtered leave types with reset is true
-    for leave_type in leave_types:
-        # Looping through all available leaves
-        available_leaves = leave_type.employee_available_leave.all()
-
-        for available_leave in available_leaves:
-            reset_date = available_leave.reset_date
-            expired_date = available_leave.expired_date
-            if reset_date == today_date:
-                available_leave.update_carryforward()
-                # new_reset_date = available_leave.set_reset_date(assigned_date=today_date,available_leave = available_leave)
-                new_reset_date = available_leave.set_reset_date(
-                    assigned_date=today_date, available_leave=available_leave
-                )
-                available_leave.reset_date = new_reset_date
-                available_leave.save()
-            if expired_date and expired_date <= today_date:
-                new_expired_date = available_leave.set_expired_date(
-                    available_leave=available_leave, assigned_date=today_date
-                )
-                available_leave.expired_date = new_expired_date
-                available_leave.save()
-
-        if (
-            leave_type.carryforward_expire_date
-            and leave_type.carryforward_expire_date <= today_date
-        ):
-            leave_type.carryforward_expire_date = leave_type.set_expired_date(
-                today_date
-            )
-            leave_type.save()
+    for client in Client.objects.all():
+        if client.schema_name == 'public':
+            continue
+            
+        with schema_context(client.schema_name):
+            try:
+                today = datetime.now()
+                today_date = today.date()
+                leave_types = LeaveType.objects.filter(reset=True)
+                # Looping through filtered leave types with reset is true
+                for leave_type in leave_types:
+                    # Looping through all available leaves
+                    available_leaves = leave_type.employee_available_leave.all()
+            
+                    for available_leave in available_leaves:
+                        reset_date = available_leave.reset_date
+                        expired_date = available_leave.expired_date
+                        if reset_date == today_date:
+                            available_leave.update_carryforward()
+                            # new_reset_date = available_leave.set_reset_date(assigned_date=today_date,available_leave = available_leave)
+                            new_reset_date = available_leave.set_reset_date(
+                                assigned_date=today_date, available_leave=available_leave
+                            )
+                            available_leave.reset_date = new_reset_date
+                            available_leave.save()
+                        if expired_date and expired_date <= today_date:
+                            new_expired_date = available_leave.set_expired_date(
+                                available_leave=available_leave, assigned_date=today_date
+                            )
+                            available_leave.expired_date = new_expired_date
+                            available_leave.save()
+            
+                    if (
+                        leave_type.carryforward_expire_date
+                        and leave_type.carryforward_expire_date <= today_date
+                    ):
+                        leave_type.carryforward_expire_date = leave_type.set_expired_date(
+                            today_date
+                        )
+                        leave_type.save()
+            except Exception as e:
+                print(f"Error in leave_reset for tenant {client.schema_name}: {e}")
 
 
 if not any(

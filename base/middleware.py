@@ -40,6 +40,12 @@ class CompanyMiddleware:
         """
         Retrieve the company ID from the request or session.
         """
+        from django.db import connection
+        from django_tenants.utils import get_public_schema_name
+
+        if connection.schema_name == get_public_schema_name():
+            return None
+
         if getattr(request, "user", False) and not request.user.is_anonymous:
             try:
                 if com_id := request.session.get("selected_company", None):
@@ -60,6 +66,12 @@ class CompanyMiddleware:
         """
         Set the company session data based on the company ID.
         """
+        from django.db import connection
+        from django_tenants.utils import get_public_schema_name
+
+        if connection.schema_name == get_public_schema_name():
+            return
+
         try:
             user = request.user.employee_get
         except Exception:

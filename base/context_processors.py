@@ -7,6 +7,8 @@ This module is used to register context processor`
 import re
 
 from django.apps import apps
+from django.db import connection
+from django_tenants.utils import get_public_schema_name
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import path, reverse
@@ -52,6 +54,9 @@ def get_companies(request):
     """
     This method will return the history additional field form
     """
+    if connection.schema_name == get_public_schema_name():
+        return {"all_companies": [], "company_selected": False}
+
     companies = list(
         [company.id, company.company, company.icon.url, False]
         for company in Company.objects.all()
@@ -157,6 +162,12 @@ urlpatterns.append(
 
 
 def white_labelling_company(request):
+    if connection.schema_name == get_public_schema_name():
+         return {
+            "white_label_company_name": "Aurevia-ERP",
+            "white_label_company": None,
+        }
+
     white_labelling = getattr(horilla_apps, "WHITE_LABELLING", False)
     if white_labelling:
         hq = Company.objects.filter(hq=True).last()
@@ -170,12 +181,12 @@ def white_labelling_company(request):
             company = hq
 
         return {
-            "white_label_company_name": company.company if company else "Horilla",
+            "white_label_company_name": company.company if company else "Aurevia-ERP",
             "white_label_company": company,
         }
     else:
         return {
-            "white_label_company_name": "Horilla",
+            "white_label_company_name": "Aurevia-ERP",
             "white_label_company": None,
         }
 
@@ -184,6 +195,12 @@ def resignation_request_enabled(request):
     """
     Check weather resignation_request enabled of not in offboarding
     """
+    """
+    Check weather resignation_request enabled of not in offboarding
+    """
+    if connection.schema_name == get_public_schema_name():
+        return {"enabled_resignation_request": False}
+
     enabled_resignation_request = False
     first = None
     if apps.is_installed("offboarding"):
@@ -200,6 +217,12 @@ def timerunner_enabled(request):
     """
     Check weather resignation_request enabled of not in offboarding
     """
+    """
+    Check weather resignation_request enabled of not in offboarding
+    """
+    if connection.schema_name == get_public_schema_name():
+        return {"enabled_timerunner": True}
+
     first = None
     enabled_timerunner = True
     if apps.is_installed("attendance"):
@@ -216,6 +239,12 @@ def intial_notice_period(request):
     """
     Check weather resignation_request enabled of not in offboarding
     """
+    """
+    Check weather resignation_request enabled of not in offboarding
+    """
+    if connection.schema_name == get_public_schema_name():
+        return {"get_initial_notice_period": 30}
+
     initial = 30
     first = None
     if apps.is_installed("payroll"):
@@ -232,6 +261,12 @@ def check_candidate_self_tracking(request):
     """
     This method is used to get the candidate self tracking is enabled or not
     """
+
+    """
+    This method is used to get the candidate self tracking is enabled or not
+    """
+    if connection.schema_name == get_public_schema_name():
+        return {"check_candidate_self_tracking": False}
 
     candidate_self_tracking = False
     if apps.is_installed("recruitment"):
@@ -250,6 +285,12 @@ def check_candidate_self_tracking_rating(request):
     """
     This method is used to check enabled/disabled of rating option
     """
+    """
+    This method is used to check enabled/disabled of rating option
+    """
+    if connection.schema_name == get_public_schema_name():
+        return {"check_candidate_self_tracking_rating": False}
+
     rating_option = False
     if apps.is_installed("recruitment"):
         RecruitmentGeneralSetting = get_horilla_model_class(
@@ -267,6 +308,9 @@ def get_initial_prefix(request):
     """
     This method is used to get the initial prefix
     """
+    if connection.schema_name == get_public_schema_name():
+        return {"get_initial_prefix": "PEP", "prefix_instance_id": None}
+
     settings = EmployeeGeneralSetting.objects.first()
     instance_id = None
     prefix = "PEP"
@@ -284,6 +328,9 @@ def biometric_app_exists(request):
 
 
 def enable_late_come_early_out_tracking(request):
+    if connection.schema_name == get_public_schema_name():
+        return {"tracking": True, "late_come_early_out_tracking": True}
+
     tracking = TrackLateComeEarlyOut.objects.first()
     enable = tracking.is_enable if tracking else True
     return {"tracking": enable, "late_come_early_out_tracking": enable}
@@ -291,6 +338,9 @@ def enable_late_come_early_out_tracking(request):
 
 def enable_profile_edit(request):
     from accessibility.accessibility import ACCESSBILITY_FEATURE
+
+    if connection.schema_name == get_public_schema_name():
+        return {"profile_edit_enabled": False}
 
     profile_edit = ProfileEditFeature.objects.filter().first()
     enable = True if profile_edit and profile_edit.is_enabled else False

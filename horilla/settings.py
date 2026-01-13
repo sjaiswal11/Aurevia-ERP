@@ -45,7 +45,21 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 # Application definition
 
-INSTALLED_APPS = [
+SHARED_APPS = [
+    "django_tenants",  # mandatory
+    "customers", # mandatory
+    
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "corsheaders",
+    "auditlog",
+]
+
+TENANT_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -54,7 +68,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "notifications",
     "mathfilters",
-    "corsheaders",
     "simple_history",
     "django_filters",
     "base",
@@ -69,12 +82,19 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "django_apscheduler",
 ]
+
+INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
+
+TENANT_MODEL = "customers.Client"
+TENANT_DOMAIN_MODEL = "customers.Domain"
+
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 
 MIDDLEWARE = [
+    "django_tenants.middleware.main.TenantMainMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -90,6 +110,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "horilla.urls"
+PUBLIC_SCHEMA_URLCONF = "horilla.urls_public"
 
 TEMPLATES = [
     {
@@ -117,25 +138,23 @@ WSGI_APPLICATION = "horilla.wsgi.application"
 
 if env("DATABASE_URL", default=None):
     DATABASES = {
-        "default": env.db(),
+        "default": env.db(engine="django_tenants.postgresql_backend"),
     }
 else:
     DATABASES = {
         "default": {
-            "ENGINE": env("DB_ENGINE", default="django.db.backends.sqlite3"),
-            "NAME": env(
-                "DB_NAME",
-                default=os.path.join(
-                    BASE_DIR,
-                    "TestDB_Horilla.sqlite3",
-                ),
-            ),
-            "USER": env("DB_USER", default=""),
-            "PASSWORD": env("DB_PASSWORD", default=""),
-            "HOST": env("DB_HOST", default=""),
-            "PORT": env("DB_PORT", default=""),
+            "ENGINE": "django_tenants.postgresql_backend",
+            "NAME": env("DB_NAME", default="horilla"),
+            "USER": env("DB_USER", default="postgres"),
+            "PASSWORD": env("DB_PASSWORD", default="postgres"),
+            "HOST": env("DB_HOST", default="db"),
+            "PORT": env("DB_PORT", default=5432),
         }
     }
+
+DATABASE_ROUTERS = (
+    "django_tenants.routers.TenantSyncRouter",
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

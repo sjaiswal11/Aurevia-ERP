@@ -14,7 +14,7 @@ INSTALLED_APPS.append("horilla_crumbs")
 INSTALLED_APPS.append("horilla_documents")
 INSTALLED_APPS.append("horilla_views")
 INSTALLED_APPS.append("horilla_automations")
-INSTALLED_APPS.append("auditlog")
+
 INSTALLED_APPS.append("biometric")
 INSTALLED_APPS.append("helpdesk")
 INSTALLED_APPS.append("offboarding")

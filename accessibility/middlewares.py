@@ -29,6 +29,12 @@ class AccessibilityMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        from django.db import connection
+        from django_tenants.utils import get_public_schema_name
+
+        if connection.schema_name == get_public_schema_name():
+            return self.get_response(request)
+
         session_key = request.session.session_key
         if session_key:
             cache_key = session_key + "accessibility_filter"

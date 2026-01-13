@@ -1862,4 +1862,4 @@ class NotificationSound(models.Model):
     sound_enabled = models.BooleanField(default=False)
 
 
-User.add_to_class("is_new_employee", models.BooleanField(default=False))
+

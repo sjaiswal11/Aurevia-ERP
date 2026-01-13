@@ -11,6 +11,7 @@ click
 cryptography
 cssselect2
 Django==4.2.23
+django-tenants
 django-auditlog
 django-apscheduler
 django-cors-headers

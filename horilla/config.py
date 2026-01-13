@@ -83,6 +83,10 @@ def sidebar(request):
 
 
 def get_MENUS(request):
+    from django.db import connection
+    from django_tenants.utils import get_public_schema_name
+
     ALL_MENUS[request.session.session_key] = []
-    sidebar(request)
+    if connection.schema_name != get_public_schema_name():
+        sidebar(request)
     return {"sidebar": ALL_MENUS.get(request.session.session_key)}

@@ -8,6 +8,23 @@
 
 ## **Installation**
 
+### **Method 1: Docker (Recommended)**
+Ensure Docker and Docker Compose are installed.
+
+1. **Start the Application**:
+   ```bash
+   docker compose up --build -d
+   ```
+
+2. **Access the Application**:
+   Open **http://localhost:8000** in your web browser.
+
+3. **View Logs** (Optional):
+   ```bash
+   docker compose logs -f server
+   ```
+
+### **Method 2: Manual Installation**
 Horilla can be installed on your system by following the steps below. Ensure you have **Python**, **Django**, and a **database** (preferably PostgreSQL) installed as prerequisites.
 
 ---

@@ -33,6 +33,11 @@ class AttendanceMiddleware(MiddlewareMixin):
         from attendance.models import Attendance, AttendanceActivity
         from attendance.views.clock_in_out import clock_out
         from base.models import EmployeeShiftSchedule
+        from django.db import connection
+        from django_tenants.utils import get_public_schema_name
+
+        if connection.schema_name == get_public_schema_name():
+            return
 
         automatic_check_out_shifts = EmployeeShiftSchedule.objects.filter(
             is_auto_punch_out_enabled=True

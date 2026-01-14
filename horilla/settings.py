@@ -61,8 +61,6 @@ SHARED_APPS = [
 
 TENANT_APPS = [
     "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -81,6 +79,16 @@ TENANT_APPS = [
     "payroll",
     "widget_tweaks",
     "django_apscheduler",
+    "horilla_audit",
+    "horilla_documents",
+    "horilla_automations",
+    "project",
+    "biometric",
+    "helpdesk",
+    "offboarding",
+    "geofencing",
+    "facedetection",
+    "accessibility",
 ]
 
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]

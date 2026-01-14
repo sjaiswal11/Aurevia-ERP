@@ -38,7 +38,20 @@ def sidebar(request):
         request.MENUS = []
         MENUS = request.MENUS
 
+        if hasattr(request, 'tenant') and hasattr(request.tenant, 'get_enabled_modules'):
+             enabled_modules = request.tenant.get_enabled_modules()
+             # Always allow core apps
+             enabled_modules.update({"base", "dashboard", "preferences", "settings"}) 
+        else:
+             enabled_modules = None
+
         for app in base_dir_apps:
+            # Filtering Logic: 
+            # If enabled_modules is set (i.e., we are in a tenant context with feature flags),
+            # check if the app is in the enabled list.
+            if enabled_modules is not None and app not in enabled_modules:
+                 continue
+
             if apps.is_installed(app):
                 try:
                     sidebar = importlib.import_module(app + ".sidebar")

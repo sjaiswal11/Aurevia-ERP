@@ -22,6 +22,10 @@ from horilla.horilla_middlewares import _thread_locals
 from horilla.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
+# Monkey patch User to include is_new_employee field 
+# This is required for onboarding logic and must be applied to tenant schemas (via base app)
+User.add_to_class("is_new_employee", models.BooleanField(default=False))
+
 # Create your models here.
 WEEKS = [
     ("0", _("First Week")),
@@ -115,8 +119,8 @@ class Department(HorillaModel):
         verbose_name = _("Department")
         verbose_name_plural = _("Departments")
 
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
+    def clean(self):
+        super().clean()
         request = getattr(_thread_locals, "request", None)
         if request and request.POST:
             company = request.POST.getlist("company_id", None)
@@ -133,7 +137,7 @@ class Department(HorillaModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.clean(*args, **kwargs)
+        self.clean()
         return self
 
     def __str__(self):
@@ -217,8 +221,8 @@ class WorkType(HorillaModel):
     def __str__(self) -> str:
         return str(self.work_type)
 
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
+    def clean(self):
+        super().clean()
         request = getattr(_thread_locals, "request", None)
         if request and request.POST:
             company = request.POST.getlist("company_id", None)
@@ -233,7 +237,7 @@ class WorkType(HorillaModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.clean(*args, **kwargs)
+        self.clean()
         return self
 
 
@@ -450,8 +454,8 @@ class EmployeeType(HorillaModel):
     def __str__(self) -> str:
         return str(self.employee_type)
 
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
+    def clean(self):
+        super().clean()
         request = getattr(_thread_locals, "request", None)
         if request and request.POST:
             company = request.POST.getlist("company_id", None)
@@ -470,7 +474,7 @@ class EmployeeType(HorillaModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.clean(*args, **kwargs)
+        self.clean()
         return self
 
 
@@ -541,8 +545,8 @@ class EmployeeShift(HorillaModel):
     def __str__(self) -> str:
         return str(self.employee_shift)
 
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
+    def clean(self):
+        super().clean()
         request = getattr(_thread_locals, "request", None)
         if request and request.POST:
             company = request.POST.getlist("company_id", None)
@@ -561,7 +565,7 @@ class EmployeeShift(HorillaModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.clean(*args, **kwargs)
+        self.clean()
         return self
 
 

@@ -7,19 +7,31 @@ This module is used to register horilla addons
 from horilla import settings
 from horilla.settings import INSTALLED_APPS
 
-INSTALLED_APPS.append("accessibility")
-INSTALLED_APPS.append("horilla_audit")
-INSTALLED_APPS.append("horilla_widgets")
-INSTALLED_APPS.append("horilla_crumbs")
-INSTALLED_APPS.append("horilla_documents")
-INSTALLED_APPS.append("horilla_views")
-INSTALLED_APPS.append("horilla_automations")
+if "accessibility" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("accessibility")
+if "horilla_audit" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("horilla_audit")
+if "horilla_widgets" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("horilla_widgets")
+if "horilla_crumbs" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("horilla_crumbs")
+if "horilla_documents" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("horilla_documents")
+if "horilla_views" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("horilla_views")
+if "horilla_automations" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("horilla_automations")
 
-INSTALLED_APPS.append("biometric")
-INSTALLED_APPS.append("helpdesk")
-INSTALLED_APPS.append("offboarding")
-INSTALLED_APPS.append("horilla_backup")
-INSTALLED_APPS.append("project")
+if "biometric" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("biometric")
+if "helpdesk" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("helpdesk")
+if "offboarding" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("offboarding")
+if "horilla_backup" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("horilla_backup")
+if "project" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("project")
 if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" not in INSTALLED_APPS:
     INSTALLED_APPS.append("storages")
 

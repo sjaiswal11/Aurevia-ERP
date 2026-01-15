@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script>
-        var at_work_seconds = {{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}
+        var at_work_seconds = Number("{{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}")
         var run = 0
     </script>
     <title class="time-runner stop-runner">{{white_label_company_name}}</title>
@@ -152,8 +152,7 @@
                         <!-- End of check in/out button in nav bar -->
                         {% endif %}
 
-                        {% if request.user|any_permission:'base' or perms.attendance.view_attendancevalidationcondition
-                        %}
+                        {% if request.user|any_permission:'base' or perms.attendance.view_attendancevalidationcondition %}
                         <!-- Start of settings button in nav bar -->
                         <div class="oh-navbar__action-icons" title="{% trans 'Settings' %}">
                             <a href="{% url 'general-settings' %}" id="settingsMenu"
